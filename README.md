@@ -4,7 +4,8 @@ Give your agents instant branding visuals from any public website.
 
 Brandpull extracts clean branding JSON: logos, favicons, OG images, colors, fonts, typography, spacing, and component styles.
 
-![brandpull preview showing Exa branding tokens](assets/brandpull-preview-exa.png)
+
+https://github.com/user-attachments/assets/ccfb76e1-86fa-4d51-9875-edcb4c56237c
 
 ## Try It
 
