@@ -1,3 +1,5 @@
+import { spawn } from "node:child_process"
+import { createServer, type Server, type ServerResponse } from "node:http"
 import type { BrandingProfile } from "./types"
 
 interface PreviewOptions {
@@ -479,9 +481,7 @@ function dataUrlResponse(profile: BrandingProfile, key: string, src: string): Re
 	})
 }
 
-async function downloadImage(profile: BrandingProfile, request: Request): Promise<Response> {
-	const url = new URL(request.url)
-	const key = url.searchParams.get("image") ?? ""
+async function downloadImage(profile: BrandingProfile, key: string): Promise<Response> {
 	const src = imageUrl(profile, key)
 	if (!src) return new Response("Image not found", { status: 404 })
 	if (src.startsWith("data:")) return dataUrlResponse(profile, key, src)
@@ -510,41 +510,82 @@ async function downloadImage(profile: BrandingProfile, request: Request): Promis
 	})
 }
 
+async function sendNodeResponse(res: ServerResponse, response: Response): Promise<void> {
+	const headers: Record<string, string> = {}
+	response.headers.forEach((value, key) => {
+		headers[key] = value
+	})
+	res.writeHead(response.status, headers)
+	if (!response.body) {
+		res.end()
+		return
+	}
+	res.end(Buffer.from(await response.arrayBuffer()))
+}
+
+function previewResponse(profile: BrandingProfile, requestUrl: string): Response | Promise<Response> {
+	const url = new URL(requestUrl)
+	if (url.pathname === "/branding.json") {
+		return Response.json(profile, {
+			headers: {
+				"cache-control": "no-store",
+			},
+		})
+	}
+	if (url.pathname === "/download") {
+		return downloadImage(profile, url.searchParams.get("image") ?? "")
+	}
+	if (url.pathname === "/" || url.pathname === "/index.html") {
+		return new Response(html(profile), {
+			headers: {
+				"content-type": "text/html; charset=utf-8",
+				"cache-control": "no-store",
+			},
+		})
+	}
+	return new Response("Not found", { status: 404 })
+}
+
+async function listen(server: Server, port: number): Promise<void> {
+	await new Promise<void>((resolve, reject) => {
+		const onError = (error: Error) => {
+			server.off("listening", onListening)
+			reject(error)
+		}
+		const onListening = () => {
+			server.off("error", onError)
+			resolve()
+		}
+		server.once("error", onError)
+		server.once("listening", onListening)
+		server.listen(port)
+	})
+}
+
 async function startServer(
 	profile: BrandingProfile,
 	port: number,
 	attempts = 20,
-): Promise<{ server: ReturnType<typeof Bun.serve>; url: string }> {
+): Promise<{ server: Server; url: string }> {
 	for (let offset = 0; offset < attempts; offset++) {
 		const candidatePort = port + offset
+		const server = createServer(async (request, response) => {
+			try {
+				const host = request.headers.host || `localhost:${candidatePort}`
+				const requestUrl = new URL(request.url || "/", `http://${host}`).href
+				await sendNodeResponse(response, await previewResponse(profile, requestUrl))
+			} catch (error) {
+				await sendNodeResponse(
+					response,
+					new Response(error instanceof Error ? error.message : "Preview server error", { status: 500 }),
+				)
+			}
+		})
 		try {
-			const server = Bun.serve({
-				port: candidatePort,
-				async fetch(request) {
-					const url = new URL(request.url)
-					if (url.pathname === "/branding.json") {
-						return Response.json(profile, {
-							headers: {
-								"cache-control": "no-store",
-							},
-						})
-					}
-					if (url.pathname === "/download") {
-						return downloadImage(profile, request)
-					}
-					if (url.pathname === "/" || url.pathname === "/index.html") {
-						return new Response(html(profile), {
-							headers: {
-								"content-type": "text/html; charset=utf-8",
-								"cache-control": "no-store",
-							},
-						})
-					}
-					return new Response("Not found", { status: 404 })
-				},
-			})
+			await listen(server, candidatePort)
 			return { server, url: `http://localhost:${candidatePort}` }
 		} catch (error) {
+			server.close()
 			if (!isAddressInUse(error) || offset === attempts - 1) throw error
 			process.stderr.write(`  Port ${candidatePort} is in use, trying ${candidatePort + 1}...\n`)
 		}
@@ -565,19 +606,26 @@ export async function serveBrandingPreview(profile: BrandingProfile, options: Pr
 	process.stderr.write("  Press Ctrl+C to stop the preview server.\n")
 
 	if (options.open !== false) {
-		Bun.spawn(["open", url], {
-			stdout: "ignore",
-			stderr: "ignore",
-		})
+		openBrowser(url)
 	}
 
 	await new Promise<void>((resolve) => {
 		const stop = () => {
-			server.stop(true)
+			server.close()
 			process.stderr.write("\n  Preview server stopped.\n")
 			resolve()
 		}
 		process.once("SIGINT", stop)
 		process.once("SIGTERM", stop)
 	})
+}
+
+function openBrowser(url: string): void {
+	const command = process.platform === "darwin" ? "open" : process.platform === "win32" ? "cmd" : "xdg-open"
+	const args = process.platform === "win32" ? ["/c", "start", "", url] : [url]
+	const child = spawn(command, args, {
+		detached: true,
+		stdio: "ignore",
+	})
+	child.unref()
 }

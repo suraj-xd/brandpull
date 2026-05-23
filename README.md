@@ -8,17 +8,18 @@ Brandpull extracts clean branding JSON: logos, favicons, OG images, colors, font
 
 ## Install
 
-Requires [Bun](https://bun.sh), because the CLI runs TypeScript directly with Bun.
-
 ```bash
-# Run without installing
+# Run without installing, using npm
+npx brandpull https://exa.ai
+
+# Or run with Bun
 bunx brandpull https://exa.ai
+
+# Install globally with npm
+npm install -g brandpull
 
 # Or install globally with Bun
 bun install -g brandpull
-
-# npm works too, as long as Bun is installed on your PATH
-npm install -g brandpull
 ```
 
 ## Quick Start
@@ -120,8 +121,10 @@ The processor then scores those candidates into a stable profile. If navigation,
 
 ## Requirements
 
-- [Bun](https://bun.sh)
+- Node.js 20+
 - Playwright browser dependencies for rendered branding extraction
+
+Bun is only used for local development and publishing builds.
 
 ## License
 

@@ -1,5 +1,5 @@
-#!/usr/bin/env bun
-import { mkdir } from "node:fs/promises"
+#!/usr/bin/env node
+import { mkdir, readFile, writeFile } from "node:fs/promises"
 import { dirname, resolve } from "node:path"
 import type { BrandingProfile } from "./branding/types"
 import { createSpinner } from "./ui"
@@ -153,7 +153,7 @@ const runPreview = async (config: Config) => {
 
 	let profile: unknown
 	try {
-		profile = JSON.parse(await Bun.file(config.url).text())
+		profile = JSON.parse(await readFile(config.url, "utf8"))
 	} catch (error) {
 		throw new Error(`Could not read branding JSON: ${error instanceof Error ? error.message : String(error)}`)
 	}
@@ -194,7 +194,7 @@ const runBranding = async (config: Config) => {
 	if (config.out) {
 		const writeSpinner = createSpinner("Writing branding JSON")
 		await mkdir(dirname(config.out), { recursive: true })
-		await Bun.write(config.out, json)
+		await writeFile(config.out, json)
 		writeSpinner.stop(`\x1b[32mSaved\x1b[0m branding JSON: \x1b[90m${config.out}\x1b[0m`)
 	} else if (!config.webPreview) {
 		process.stdout.write(json)

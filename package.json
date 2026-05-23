@@ -1,13 +1,13 @@
 {
 	"name": "brandpull",
-	"version": "0.1.3",
+	"version": "0.1.4",
 	"description": "Give agents instant branding visuals from websites",
-	"module": "src/index.ts",
+	"module": "dist/index.js",
 	"type": "module",
 	"license": "MIT",
 	"packageManager": "bun@1.3.3",
 	"engines": {
-		"bun": ">=1.2.0"
+		"node": ">=20"
 	},
 	"publishConfig": {
 		"access": "public"
@@ -31,14 +31,16 @@
 	"files": [
 		"assets",
 		"bin",
-		"src",
+		"dist",
 		"README.md",
 		"LICENSE",
 		"tsconfig.json"
 	],
 	"scripts": {
-		"check": "biome check . && tsc --noEmit",
+		"build": "bun build src/index.ts --target=node --outfile=dist/index.js --external playwright",
+		"check": "biome check . && tsc --noEmit && bun run build",
 		"format": "biome format --write .",
+		"prepack": "bun run build",
 		"typecheck": "tsc --noEmit"
 	},
 	"bin": {
