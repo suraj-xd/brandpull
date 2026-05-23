@@ -9,7 +9,7 @@ Brandpull extracts clean branding JSON: logos, favicons, OG images, colors, font
 ## Try It
 
 ```bash
-npx brandpull@latest https://exa.ai
+npx brandpull https://exa.ai
 ```
 
 This saves `exa-ai-branding.json` and opens a local visual preview.
@@ -17,7 +17,7 @@ This saves `exa-ai-branding.json` and opens a local visual preview.
 For agents or scripts, skip the preview server:
 
 ```bash
-npx brandpull@latest https://exa.ai --no-preview
+npx brandpull https://exa.ai --no-preview
 ```
 
 ## Install
