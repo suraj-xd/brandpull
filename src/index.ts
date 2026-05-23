@@ -28,7 +28,7 @@ const help = `
   Options:
     -o, --out <file>      Write JSON to file instead of stdout
     --web-preview         Open a local browser preview for the branding JSON
-    --no-preview          Save JSON without starting the preview in shorthand mode
+    --no-preview          Save JSON without starting the local preview server
     --preview-port <n>    Preferred preview server port (default: 4177)
     --no-open             Start preview server without opening a browser
     --llm                 Use OpenAI enhancement when OPENAI_API_KEY is set

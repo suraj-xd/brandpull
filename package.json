@@ -1,7 +1,7 @@
 {
 	"name": "brandpull",
-	"version": "0.1.2",
-	"description": "Extract branding JSON from websites with rendered DOM analysis",
+	"version": "0.1.3",
+	"description": "Give agents instant branding visuals from websites",
 	"module": "src/index.ts",
 	"type": "module",
 	"license": "MIT",

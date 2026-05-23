@@ -1,6 +1,8 @@
 # brandpull
 
-Extract clean branding JSON from any public website: logos, favicons, OG images, colors, fonts, typography, spacing, and component styles.
+Give your agents instant branding visuals from any public website.
+
+Brandpull extracts clean branding JSON: logos, favicons, OG images, colors, fonts, typography, spacing, and component styles.
 
 ![brandpull preview showing Exa branding tokens](assets/brandpull-preview-exa.png)
 
@@ -32,6 +34,16 @@ brandpull https://exa.ai -o exa-branding.json
 brandpull preview exa-branding.json
 ```
 
+## For Agents
+
+Use `--no-preview` when an agent needs the branding JSON without starting the local HTML preview server.
+
+```bash
+brandpull https://exa.ai --no-preview
+```
+
+The default command is human-friendly and opens the preview. The `--no-preview` flag keeps it automation-friendly while still saving the JSON file.
+
 ## Branding Commands
 
 ```bash
@@ -46,7 +58,7 @@ Options:
 ```txt
 -o, --out <file>    Write branding JSON to a file instead of stdout
 --web-preview       Open a local browser preview for the branding JSON
---no-preview        Save JSON without starting the preview in shorthand mode
+--no-preview        Save JSON without starting the local preview server
 --preview-port <n>  Preferred preview server port (default: 4177)
 --no-open           Start preview server without opening a browser
 --llm               Use optional OpenAI enhancement when OPENAI_API_KEY is set
