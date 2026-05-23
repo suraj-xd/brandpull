@@ -6,19 +6,25 @@ Brandpull extracts clean branding JSON: logos, favicons, OG images, colors, font
 
 ![brandpull preview showing Exa branding tokens](assets/brandpull-preview-exa.png)
 
+## Try It
+
+```bash
+npx brandpull@latest https://exa.ai
+```
+
+This saves `exa-ai-branding.json` and opens a local visual preview.
+
+For agents or scripts, skip the preview server:
+
+```bash
+npx brandpull@latest https://exa.ai --no-preview
+```
+
 ## Install
 
 ```bash
-# Run without installing, using npm
-npx brandpull https://exa.ai
-
-# Or run with Bun
-bunx brandpull https://exa.ai
-
-# Install globally with npm
 npm install -g brandpull
 
-# Or install globally with Bun
 bun install -g brandpull
 ```
 
