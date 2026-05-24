@@ -1,7 +1,5 @@
 # brandpull
 
-Give your agents instant branding visuals from any public website.
-
 Brandpull extracts clean branding JSON: logos, favicons, OG images, colors, fonts, typography, spacing, and component styles.
 
 
