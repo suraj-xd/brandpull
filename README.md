@@ -2,7 +2,6 @@
 
 Brandpull extracts clean branding JSON: logos, favicons, OG images, colors, fonts, typography, spacing, and component styles.
 
-
 https://github.com/user-attachments/assets/ccfb76e1-86fa-4d51-9875-edcb4c56237c
 
 ## Try It
